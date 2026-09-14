@@ -7,9 +7,7 @@
 
 **下载 GIF**：[高清 495px（5.2 MB）](assets/hair_timelapse_hd.gif) · [标准 396px（3.2 MB）](assets/hair_timelapse.gif) · [小图 264px（1.6 MB）](assets/hair_timelapse_small.gif)
 
-
 **👉 在线玩**：https://astarysky.github.io/fluffiness-bar/　（左右方向键逐帧，空格自动播放）
-
 
 - 画面取自视频本体（720P），不是封面——封面上的黄色大字压在头上，把头发挡没了
 - 每一帧按**双眼连线**对齐：眼距恒定、双眼中点固定、眼线转正。换帧时脸不动，只有头发在变
@@ -24,11 +22,6 @@ python -m http.server 8000
 ```
 
 直接双击 `index.html` 也能用，但浏览器对 `file://` 的并发加载有限制，起个 server 更顺。
-
-## 部署
-
-推到 GitHub，Settings → Pages → Source 选 `Deploy from a branch`，
-分支选 `main`、目录选 `/ (root)`，等一分钟即可。
 
 ## 说明
 
