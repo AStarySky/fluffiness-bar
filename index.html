@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>蓬松度进度条 · 分析学爱好者</title>
+<meta name="description" content="把 B 站 UP 主「分析学爱好者」83 期视频里的画面按头发蓬松度排好序，拉动滑杆就能看他的头发一步步起飞。每一帧都按双眼连线对齐，脸不动，只有头发在长。">
+<meta name="color-scheme" content="light dark">
+<meta property="og:type" content="website">
+<meta property="og:title" content="蓬松度进度条 · 分析学爱好者">
+<meta property="og:description" content="83 期视频，按头发蓬松度排序。拉动滑杆，看头发一步步起飞。">
+<meta property="og:image" content="https://astarysky.github.io/fluffiness-bar/data/og.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>💈</text></svg>">
+<style>
+:root{color-scheme:light dark;--page:#f4f4f1;--panel:#fff;--ink:#0b0b0b;--ink2:#52514e;
+ --muted:#898781;--grid:#e1e0d9;--blue:#2a78d6;--orange:#eb6834;--line:rgba(11,11,11,.11);
+ --chip:rgba(11,11,11,.05);--sh:0 8px 30px rgba(11,11,11,.13)}
+@media (prefers-color-scheme:dark){:root{--page:#0c0c0c;--panel:#161615;--ink:#fff;
+ --ink2:#c3c2b7;--muted:#898781;--grid:#2c2c2a;--blue:#3987e5;--orange:#d95926;
+ --line:rgba(255,255,255,.13);--chip:rgba(255,255,255,.07);--sh:0 10px 34px rgba(0,0,0,.6)}}
+*{box-sizing:border-box} html,body{height:100%}
+body{margin:0;background:var(--page);color:var(--ink);overflow:hidden;
+ font:14px/1.55 system-ui,-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;
+ display:flex;flex-direction:column;height:100vh}
+header{padding:11px 20px 10px;border-bottom:1px solid var(--line);background:var(--panel);
+ flex:0 0 auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+h1{font-size:16px;margin:0;white-space:nowrap}
+h1 span{color:var(--muted);font-weight:400;font-size:12.5px;margin-left:8px}
+.sp{flex:1 1 auto}
+button{cursor:pointer}
+.seg{display:flex;background:var(--chip);border-radius:8px;padding:2px;gap:2px}
+.seg button{border:0;background:transparent;color:var(--ink2);font:inherit;font-size:12.5px;
+ padding:5px 11px;border-radius:6px;white-space:nowrap}
+.seg button[aria-pressed=true]{background:var(--panel);color:var(--ink);font-weight:600;
+ box-shadow:0 1px 3px rgba(0,0,0,.14)}
+@media (prefers-color-scheme:dark){.seg button[aria-pressed=true]{background:#2f2f2d}}
+.pill{border:1px solid var(--line);background:var(--panel);color:var(--ink2);border-radius:7px;
+ font:inherit;font-size:12.5px;padding:5px 11px}
+.pill[aria-pressed=true]{border-color:var(--blue);color:var(--blue);font-weight:600}
+main{flex:1 1 auto;display:flex;min-height:0}
+#stage{flex:1 1 auto;display:flex;align-items:center;justify-content:center;min-width:0;
+ padding:14px;position:relative}
+#box{position:relative;overflow:hidden;border-radius:10px;box-shadow:var(--sh);background:#000}
+#box img.lay{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;
+ transition:opacity .12s linear}
+#g0{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;
+ filter:grayscale(1) brightness(1.45) contrast(.85);transition:opacity .22s;
+ pointer-events:none;z-index:3}
+#box.ghost #g0{opacity:.38}
+#box.head img.lay,#box.head #g0{object-position:50% 0;transform:scale(1.6);
+ transform-origin:50% 3%}
+#hud{position:absolute;left:15px;top:12px;z-index:4;display:flex;gap:7px;align-items:baseline;
+ pointer-events:none}
+#hud .big{font-size:40px;font-weight:700;letter-spacing:-.02em;line-height:1;
+ font-variant-numeric:tabular-nums;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.8)}
+#hud .u{color:#fff;opacity:.78;font-size:12.5px;text-shadow:0 2px 8px rgba(0,0,0,.85)}
+#tag{position:absolute;left:15px;right:15px;bottom:12px;z-index:4;color:#fff;font-size:13px;
+ text-shadow:0 1px 9px rgba(0,0,0,.95),0 0 3px rgba(0,0,0,.9);pointer-events:none}
+#tag a{color:#fff;text-decoration:none;border-bottom:1px solid rgba(255,255,255,.5)}
+aside{flex:0 0 372px;border-left:1px solid var(--line);background:var(--panel);padding:15px 18px;
+ overflow:auto;display:flex;flex-direction:column;gap:13px}
+.kv{flex:0 0 auto;display:grid;grid-template-columns:auto 1fr;gap:5px 12px;font-size:13px;
+ font-variant-numeric:tabular-nums}
+.kv i{font-style:normal;color:var(--muted)} .kv b{font-weight:600}
+.kv a{color:var(--blue);text-decoration:none}
+h3{font-size:13px;margin:0;color:var(--muted);font-weight:500}
+#sl{-webkit-appearance:none;appearance:none;width:100%;height:26px;background:transparent;
+ cursor:grab;display:block}
+#sl:active{cursor:grabbing}
+#sl::-webkit-slider-runnable-track{height:8px;border-radius:4px;background:
+ linear-gradient(90deg,var(--blue) 0,var(--blue) var(--p,0%),var(--grid) var(--p,0%))}
+#sl::-moz-range-track{height:8px;border-radius:4px;background:var(--grid)}
+#sl::-moz-range-progress{height:8px;border-radius:4px;background:var(--blue)}
+#sl::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;
+ background:var(--panel);border:3px solid var(--blue);margin-top:-7px;
+ box-shadow:0 2px 9px rgba(0,0,0,.32)}
+#sl::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:var(--panel);
+ border:3px solid var(--blue)}
+.ticks{display:flex;justify-content:space-between;color:var(--muted);font-size:11.5px;
+ font-variant-numeric:tabular-nums;margin-top:-4px}
+#chart{width:100%;height:100px;flex:0 0 auto;display:block;overflow:visible}
+#strip{flex:0 0 auto;max-height:min(38vh,330px);overflow-y:auto;display:grid;gap:4px;
+ grid-template-columns:repeat(auto-fill,minmax(44px,1fr));
+ align-content:start;border-top:1px solid var(--line);padding-top:11px}
+#strip img{width:100%;aspect-ratio:7/6;object-fit:cover;border-radius:4px;cursor:pointer;
+ display:block;opacity:.5;transition:opacity .15s,box-shadow .15s,transform .15s}
+#strip img:hover{opacity:.92}
+#strip img.on{opacity:1;box-shadow:0 0 0 2.5px var(--orange);transform:scale(1.07)}
+.row{display:flex;align-items:center;gap:9px}
+.note{color:var(--muted);font-size:12px}
+.note a{color:var(--blue)}
+@media (max-width:900px){main{flex-direction:column}aside{flex:0 0 auto;border-left:0;
+ border-top:1px solid var(--line);max-height:54%}}
+</style>
+</head>
+<body>
+<header>
+  <h1>蓬松度进度条<span id="sub"></span></h1>
+  <div class="sp"></div>
+  <div class="seg" id="view">
+    <button data-v="full" aria-pressed="true">原画幅</button>
+    <button data-v="head" aria-pressed="false">拉近头顶</button>
+  </div>
+  <button class="pill" id="ghost" aria-pressed="false">叠加基准帧</button>
+  <button class="pill" id="play" aria-pressed="false">▶ 自动播放</button>
+</header>
+<main>
+  <div id="stage">
+    <div id="box">
+      <img class="lay" id="sa" alt=""><img class="lay" id="sb" alt=""><img id="g0" alt="">
+      <div id="hud"><span class="big" id="hv">—</span><span class="u">蓬松度</span></div>
+      <div id="tag"></div>
+    </div>
+  </div>
+  <aside>
+    <div class="row"><span class="note" id="pos"></span><div class="sp"></div>
+      <span class="note">← → 逐帧 · 空格播放</span></div>
+    <div>
+      <input type="range" id="sl" min="0" max="1" step="0.001" aria-label="头发蓬松度">
+      <div class="ticks"><span>2.25</span><span>3.0</span><span>3.75</span><span>4.5</span>
+        <span>5.0</span></div>
+    </div>
+    <svg id="chart" role="img" aria-label="每帧蓬松度随日期变化，橙圈为当前帧"></svg>
+    <h3>这一帧</h3>
+    <div class="kv" id="kv"></div>
+    <h3 id="cnt">全部 — 帧（按蓬松度排序）</h3>
+    <div id="strip"></div>
+    <div class="note">
+      画面取自视频本体（720P），不是封面——封面上的黄色大字压在头上，把头发挡没了。
+      每一帧再按双眼连线对齐：眼距恒定、双眼中点固定、眼线转正。换帧时脸不动，只有头发在变。
+    </div>
+    <div class="note">
+      素材来自 B 站 UP 主
+      <a href="https://space.bilibili.com/441167301" target="_blank" rel="noopener">分析学爱好者</a>
+      （mid 441167301）的公开视频，83 帧 / 2026-07-14 ~ 2026-09-14。
+      蓬松度为 4 人盲评均值，与视频内容无关，纯属娱乐。
+    </div>
+  </aside>
+</main>
+<script>
+const DATA = {"frames":[{"i":52,"hair":2.25,"date":"2026-08-08","title":"比起清华直博我更爱开班 | AI时代下的数学教培","bvid":"BV1ywu566EBP","A":2.0,"W":2.6},{"i":65,"hair":2.25,"date":"2026-07-30","title":"与同济数学博导聊AI for Math：我未能理解AI","bvid":"BV17L346TEQZ","A":2.0,"W":2.0},{"i":76,"hair":2.25,"date":"2026-07-22","title":"菲尔兹奖有多难拿？它为何是“数学界的诺贝尔奖”？","bvid":"BV1BjgC62EEy","A":4.0,"W":2.0},{"i":48,"hair":2.5,"date":"2026-08-11","title":"智能学派真推动黎曼猜想进展&数学进入黄金年代","bvid":"BV15kui6XE9b","A":3.8,"W":3.4},{"i":59,"hair":2.5,"date":"2026-08-04","title":"与小崔说数聊考研数学：我未能理解数学教育","bvid":"BV1HuuA6TEtJ","A":2.0,"W":2.0},{"i":72,"hair":2.5,"date":"2026-07-24","title":"打不过就加入：菲奖得主官宣加入OpenAI","bvid":"BV17igh6LEBs","A":4.0,"W":3.0},{"i":82,"hair":2.5,"date":"2026-07-16","title":"菲奖得主的百合热情似乎比他的数学成果更受关注","bvid":"BV1J4KV69Ecc","A":2.0,"W":2.8},{"i":5,"hair":2.75,"date":"2026-09-12","title":"千禧年七大难题已经沦为了AI的benchmark","bvid":"BV1nJY26QEzr","A":5.0,"W":3.4},{"i":50,"hair":2.75,"date":"2026-08-10","title":"【7月收入公开】不带货不接广不卖课能赚多少？","bvid":"BV1Vkuo6VEWf","A":1.0,"W":3.0},{"i":51,"hair":2.75,"date":"2026-08-09","title":"AI炼化了我五年前做的习题解答，我开心又惆怅","bvid":"BV1Tiu26qEwd","A":2.0,"W":2.6},{"i":53,"hair":2.75,"date":"2026-08-08","title":"北大白金一代：王虹邓煜同级校友苏炜杰获考普斯奖","bvid":"BV1tauG6GERC","A":4.0,"W":2.4},{"i":57,"hair":2.75,"date":"2026-08-05","title":"与南大数学博士聊Math for AI：我未能理解AI","bvid":"BV1CoM26FE5E","A":2.0,"W":2.0},{"i":63,"hair":2.75,"date":"2026-08-01","title":"OpenAI的十个重大数学成果：数学核爆已成常态","bvid":"BV1HhGV6kEUy","A":4.2,"W":4.0},{"i":66,"hair":2.75,"date":"2026-07-29","title":"王虹为何会在北大感到discouraged？","bvid":"BV1gN3261EyW","A":3.0,"W":2.6},{"i":67,"hair":2.75,"date":"2026-07-29","title":"菲尔兹奖得主雅各布，但因为AI无休止唱衰数学","bvid":"BV1nY3z6VEyS","A":3.8,"W":3.0},{"i":70,"hair":2.75,"date":"2026-07-27","title":"2026菲奖得主雅各布，为何支持数学消灭定理？","bvid":"BV1u8gX6fEBt","A":4.0,"W":3.0},{"i":74,"hair":2.75,"date":"2026-07-23","title":"中国数学正式实现菲尔兹奖从0到2的重大突破！","bvid":"BV1hcg46XEKz","A":5.0,"W":4.0},{"i":81,"hair":2.75,"date":"2026-07-18","title":"北大晋升双菲院校，对中国数学有何正面影响？","bvid":"BV1ikNo6BEDU","A":5.0,"W":2.0},{"i":84,"hair":2.75,"date":"2026-07-15","title":"揭秘两位中国菲奖得主，用来斩获菲奖的重要成果","bvid":"BV14VN86CELF","A":5.0,"W":3.0},{"i":3,"hair":3.0,"date":"2026-09-13","title":"在解数学题这个Benchmark上，AI快刷无可刷了","bvid":"BV1vQYo66E53","A":3.2,"W":2.2},{"i":19,"hair":3.0,"date":"2026-09-03","title":"转到人工智能是我这辈子做过的最正确的决定","bvid":"BV1Bxtf6qEmz","A":1.8,"W":2.2},{"i":26,"hair":3.0,"date":"2026-08-28","title":"之前被AI炸的愧对父老不敢回家，现在可以回家了","bvid":"BV1bh4d6CE82","A":1.4,"W":3.2},{"i":38,"hair":3.0,"date":"2026-08-17","title":"“我是智能学派民科，我真用AI做出了数学成果”","bvid":"BV1HTbi6LEK2","A":2.2,"W":2.8},{"i":43,"hair":3.0,"date":"2026-08-15","title":"4+4毕业的协和医生，解决了22年未决的数学难题","bvid":"BV174bk6dEVu","A":3.6,"W":3.2},{"i":44,"hair":3.0,"date":"2026-08-14","title":"“我用AI证明了黎曼猜想，现在我要怎么投稿”","bvid":"BV1J4gK6LEx8","A":3.6,"W":4.0},{"i":58,"hair":3.0,"date":"2026-08-04","title":"二探数学论文工厂：四大从7万5降价到5万6","bvid":"BV1TaMB65Ezf","A":3.0,"W":2.8},{"i":61,"hair":3.0,"date":"2026-08-02","title":"我们借助AI，成功试爆了只属于自己的数学核弹","bvid":"BV1rZ396pEri","A":2.4,"W":4.2},{"i":62,"hair":3.0,"date":"2026-08-01","title":"一周前我预言：AI很快会做出菲奖级成果","bvid":"BV1en3m6WEVx","A":2.6,"W":3.0},{"i":69,"hair":3.0,"date":"2026-07-27","title":"第一次被女粉表白，我的回答是……","bvid":"BV1s3gf6KEuY","A":1.0,"W":3.0},{"i":71,"hair":3.0,"date":"2026-07-25","title":"菲奖得主确实很热衷于安利他对百合的热情","bvid":"BV1hP3G6EEjY","A":2.0,"W":2.4},{"i":78,"hair":3.0,"date":"2026-07-20","title":"AI的第三个四大级成果：证伪雅可比猜想","bvid":"BV1daK16zEMt","A":4.0,"W":3.2},{"i":79,"hair":3.0,"date":"2026-07-20","title":"一篇数学四大只卖七万五？揭秘数学论文工厂！","bvid":"BV1H8K66iE4g","A":3.0,"W":4.0},{"i":83,"hair":3.0,"date":"2026-07-16","title":"冷知识：王虹不只因证明3维挂谷猜想而获菲奖","bvid":"BV1XjNB6CENh","A":4.6,"W":2.6},{"i":85,"hair":3.0,"date":"2026-07-14","title":"一炮双响！王虹邓煜两人同时斩获菲尔兹奖？","bvid":"BV1L3NS62EJ6","A":5.0,"W":4.0},{"i":1,"hair":3.25,"date":"2026-09-14","title":"人类数学协会：数学家如何抵制AI并捍卫古法数学","bvid":"BV1voYB6WEBY","A":3.8,"W":2.8},{"i":17,"hair":3.25,"date":"2026-09-04","title":"元辅被王者荣耀策划削弱，我仿佛看到核弹爆炸","bvid":"BV1votz6yE6y","A":1.0,"W":4.0},{"i":30,"hair":3.25,"date":"2026-08-24","title":"人结合AI的菲奖级成果？6维球面上的复结构！","bvid":"BV19b8v6NEtX","A":4.6,"W":4.0},{"i":37,"hair":3.25,"date":"2026-08-18","title":"与DeepMath研究员聊AI：新时代的数学建议","bvid":"BV1tR8u6HEmW","A":2.0,"W":1.2},{"i":42,"hair":3.25,"date":"2026-08-15","title":"本以为自己要瞎了，结果是被AI弄的精神压力过大","bvid":"BV1vRbC6xEAA","A":1.2,"W":3.0},{"i":77,"hair":3.25,"date":"2026-07-22","title":"做了半个月AI for Math，确定数学的未来在AI","bvid":"BV11UKa6JEuS","A":2.0,"W":2.6},{"i":80,"hair":3.25,"date":"2026-07-19","title":"2026菲尔兹奖，是最后一届独属于人类的菲奖","bvid":"BV12BKN6VEuf","A":5.0,"W":3.8},{"i":0,"hair":3.5,"date":"2026-09-14","title":"丘成桐先生创办期刊《AI辅助下的数学》","bvid":"BV1TAYy6REKv","A":3.8,"W":1.0},{"i":4,"hair":3.5,"date":"2026-09-12","title":"25位菲奖得主联署公开信《AI在数学中的严重错位》","bvid":"BV1r3Y96gEfj","A":4.2,"W":2.8},{"i":10,"hair":3.5,"date":"2026-09-08","title":"AI公司的数学冷战结束了，取而代之的是核热斗","bvid":"BV1u9YE6RECM","A":3.6,"W":3.8},{"i":28,"hair":3.5,"date":"2026-08-25","title":"Anthropic把数学界对AI的防御宣言扔到地上踩","bvid":"BV11dhV6cEgZ","A":3.4,"W":4.0},{"i":31,"hair":3.5,"date":"2026-08-23","title":"AI4Math周报：Yau-Tian-Donaldson猜想被证伪后","bvid":"BV1mX886VEtT","A":3.8,"W":2.8},{"i":41,"hair":3.5,"date":"2026-08-16","title":"民科用AI解决森多夫猜想，陶哲轩辅助AI消化证明","bvid":"BV15SbX6DEds","A":3.8,"W":3.0},{"i":49,"hair":3.5,"date":"2026-08-11","title":"Claude的氢弹级成果：黎曼猜想的重大突破","bvid":"BV1CCuv6AEyD","A":4.4,"W":5.0},{"i":54,"hair":3.5,"date":"2026-08-07","title":"致歉3：再次对我的四个问题进行道歉","bvid":"BV142u86dEoL","A":1.2,"W":1.8},{"i":60,"hair":3.5,"date":"2026-08-02","title":"AI会拯救数学，让数学进入黄金时代","bvid":"BV1Pj3d6FEgx","A":2.2,"W":3.0},{"i":64,"hair":3.5,"date":"2026-08-01","title":"我想证明AI能拯救数学，但目前还没有成功","bvid":"BV1bKGT6vEMr","A":2.0,"W":2.0},{"i":68,"hair":3.5,"date":"2026-07-28","title":"辟谣：我不是也不像邓煜，请勿因为菲奖向我表白","bvid":"BV1Lv3v6xExa","A":1.2,"W":2.6},{"i":15,"hair":3.75,"date":"2026-09-05","title":"陶哲轩的长文&疑似被AI解决的千禧年七大难题","bvid":"BV1R3t26bEW5","A":5.0,"W":3.4},{"i":20,"hair":3.75,"date":"2026-09-02","title":"菲奖得主为何用“原子弹爆炸”形容AI对数学的冲击","bvid":"BV1o3tU6TEAJ","A":3.6,"W":3.0},{"i":29,"hair":3.75,"date":"2026-08-24","title":"本想讲古法数学的巅峰Hopf猜想，现在没心情了","bvid":"BV1orhK6tE5q","A":2.2,"W":2.2},{"i":32,"hair":3.75,"date":"2026-08-23","title":"决定转向AI的那个晚上，我一秒钟都没睡着","bvid":"BV1DH8S6KE3q","A":1.4,"W":2.4},{"i":33,"hair":3.75,"date":"2026-08-22","title":"数学氢弹爆炸：AI证伪Yau-Tian-Donaldson猜想","bvid":"BV17b8z6QE6K","A":4.0,"W":4.8},{"i":56,"hair":3.75,"date":"2026-08-06","title":"致歉：因为恐惧AI我有自毁倾向，高估了AI的影响","bvid":"BV1hou768Ezt","A":1.2,"W":3.0},{"i":2,"hair":4.0,"date":"2026-09-13","title":"【AI4Math周报4】眩晕瘫坐仿佛看到二向箔打击","bvid":"BV18KYq6zEc9","A":2.8,"W":4.0},{"i":8,"hair":4.0,"date":"2026-09-10","title":"OpenAI与数学家在千禧年七大难题上的争议","bvid":"BV1vCY86cEFH","A":4.2,"W":2.6},{"i":14,"hair":4.0,"date":"2026-09-05","title":"菲奖得主眼中的数学原子弹爆炸：AI突破渗流理论","bvid":"BV1u9b56eEcA","A":4.6,"W":4.2},{"i":22,"hair":4.0,"date":"2026-08-31","title":"只是概率模型的AI，却为何能解决数学难题？","bvid":"BV1Moth6CEi9","A":2.8,"W":3.0},{"i":25,"hair":4.0,"date":"2026-08-28","title":"人结合AI的菲奖级成果，正式通过形式化检验！","bvid":"BV1yYtA6sEcs","A":4.6,"W":3.6},{"i":27,"hair":4.0,"date":"2026-08-26","title":"AI在数学上突飞猛进，也让我从做题家开始社会化","bvid":"BV1Fj8Z6kEkE","A":2.0,"W":2.0},{"i":40,"hair":4.0,"date":"2026-08-16","title":"AI思路比人更灵巧，数学会复刻围棋的困境吗？","bvid":"BV1DWbR6jENe","A":2.8,"W":3.0},{"i":55,"hair":4.0,"date":"2026-08-07","title":"致歉2：关于我所谓爹味言论和争吵的来龙去脉","bvid":"BV1kvub65EGM","A":1.2,"W":2.6},{"i":6,"hair":4.25,"date":"2026-09-11","title":"在NS方程外，OpenAI又推进一千禧年七大难题","bvid":"BV1dsYg6rENx","A":4.6,"W":3.0},{"i":9,"hair":4.25,"date":"2026-09-09","title":"OpenAI官宣攻克千禧年七大难题的NS方程问题","bvid":"BV1SdYn6cEoq","A":5.0,"W":4.2},{"i":24,"hair":4.25,"date":"2026-08-29","title":"古法数学巅峰，也或许是最后的荣光：Hopf猜想","bvid":"BV1ht4269E14","A":4.6,"W":2.8},{"i":39,"hair":4.25,"date":"2026-08-17","title":"“我用免费版豆包研究数学，发现你在吹嘘AI”","bvid":"BV1gNbv6ZEyt","A":2.0,"W":3.0},{"i":16,"hair":4.5,"date":"2026-09-05","title":"Claude形式化费马大定理证明：数学工业化","bvid":"BV13dty6DEMg","A":4.0,"W":3.0},{"i":18,"hair":4.5,"date":"2026-09-04","title":"GPT-6推进孪生素数猜想！我仿佛看到氢弹爆炸","bvid":"BV1d3tq6qEBE","A":3.2,"W":4.4},{"i":21,"hair":4.5,"date":"2026-09-01","title":"从低垂果实到菲奖级成果，AI如何推进数学？","bvid":"BV1pYtG6jEEj","A":3.2,"W":2.8},{"i":34,"hair":4.5,"date":"2026-08-21","title":"我的颈椎病养成记：大学生不要省不该省的钱！","bvid":"BV1p1bf6UE1i","A":1.0,"W":2.4},{"i":35,"hair":4.5,"date":"2026-08-20","title":"如果AI证明了黎曼猜想，我就女装COS元辅跳舞","bvid":"BV1jw8w61Ez6","A":1.6,"W":3.8},{"i":47,"hair":4.5,"date":"2026-08-12","title":"如果我能重回大一，我会这么过好大学生活","bvid":"BV1jwgG6dEDL","A":1.4,"W":2.0},{"i":11,"hair":4.75,"date":"2026-09-08","title":"OpenAI真疑似证明千禧年七大难题：NS方程问题","bvid":"BV11BbV6RE38","A":5.0,"W":4.0},{"i":12,"hair":4.75,"date":"2026-09-07","title":"比起数学原子弹爆炸，菲奖得主更关心核辐射","bvid":"BV1pmbP6ZEaj","A":3.6,"W":4.0},{"i":13,"hair":4.75,"date":"2026-09-06","title":"【AI4Math周报3】浩浩荡荡的战略核轰炸开始了","bvid":"BV1Uobx6cE3K","A":3.2,"W":4.4},{"i":23,"hair":4.75,"date":"2026-08-30","title":"AI4Math周报2：数学赛博朋克降临在2026","bvid":"BV1o2tW6KEBJ","A":3.2,"W":3.0},{"i":45,"hair":4.75,"date":"2026-08-14","title":"我们团队借助AI试爆了自己的第二颗数学原子弹","bvid":"BV1CDgw6GE1f","A":2.4,"W":4.2},{"i":7,"hair":5.0,"date":"2026-09-10","title":"AI又疑似攻克了千禧年七大难题中的Hodge猜想","bvid":"BV1YPYT6bEuu","A":5.0,"W":3.6},{"i":46,"hair":5.0,"date":"2026-08-13","title":"“GPT把黎曼猜想的进度从67.25%推到了67.3%”","bvid":"BV1f7gp6xEVw","A":3.8,"W":2.8}],"meta":{"n":83,"name":"分析学爱好者","mid":"441167301","lo":2.25,"hi":5.0,"d0":"2026-07-14","d1":"2026-09-14"}};
+const F = DATA.frames, M = DATA.meta;
+const $ = id => document.getElementById(id);
+const box = $('box'), sa = $('sa'), sb = $('sb'), g0 = $('g0'), sl = $('sl');
+const BIG = f => `data/big/${f.i}.jpg`, TH = f => `data/th/${f.i}.jpg`;
+let cur = 0, front = sa, back = sb, playing = null, pending = -1;
+
+$('sub').textContent = `${M.name}（mid ${M.mid}） · ${M.d0} ~ ${M.d1} · ${M.n} 帧`;
+$('cnt').textContent = `全部 ${F.length} 帧（按蓬松度排序）`;
+
+/* ---------- 图片：先解码再交叉淡入，网络慢也不会闪 ---------- */
+const cache = new Map();
+function preload(k){
+  let im = cache.get(k);
+  if (!im){ im = new Image(); im.decoding = 'async'; im.src = BIG(F[k]); cache.set(k, im); }
+  return im;
+}
+function show(k, instant){
+  k = Math.max(0, Math.min(F.length - 1, k));
+  const f = F[k], im = preload(k);
+  const apply = () => {
+    if (back.getAttribute('src') !== im.src) back.src = im.src;
+    if (instant){
+      back.style.transition = 'none'; front.style.transition = 'none';
+      back.style.opacity = 1; front.style.opacity = 0;
+      back.getBoundingClientRect();
+      requestAnimationFrame(() => { back.style.transition = ''; front.style.transition = ''; });
+    } else {
+      back.style.opacity = 1; front.style.opacity = 0;
+    }
+    const t = front; front = back; back = t;
+  };
+  if (im.complete && im.naturalWidth){ pending = -1; apply(); }
+  else {
+    pending = k;
+    const go = () => { if (im.complete && im.naturalWidth && pending === k){ pending = -1; apply(); } };
+    im.addEventListener('load', go, {once: true});
+    im.addEventListener('error', go, {once: true});
+  }
+  cur = k;
+  $('hv').textContent = f.hair.toFixed(2);
+  $('tag').innerHTML = `<b>${f.date}</b>　`;
+  $('tag').appendChild(document.createTextNode(f.title));
+  $('kv').innerHTML =
+    `<i>发布日期</i><b>${f.date}</b>` +
+    `<i>头发蓬松度</i><b>${f.hair.toFixed(2)} / 5</b>` +
+    `<i>事件分量</i><b>${f.A == null ? '—' : f.A.toFixed(2)}</b>` +
+    `<i>措辞强度</i><b>${f.W == null ? '—' : f.W.toFixed(2)}</b>` +
+    `<i>原视频</i><b><a href="https://www.bilibili.com/video/${f.bvid}" target="_blank"
+       rel="noopener">${f.bvid} ↗</a></b>`;
+  sl.value = f.hair;
+  sl.style.setProperty('--p', ((f.hair - M.lo) / (M.hi - M.lo) * 100).toFixed(2) + '%');
+  $('pos').textContent = `第 ${k + 1} / ${F.length} 帧`;
+  const all = document.querySelectorAll('#strip img');
+  all.forEach((o, i) => o.classList.toggle('on', i === k));
+  if (all[k]) all[k].scrollIntoView({block: 'nearest'});
+  moveMarker(k);
+}
+function nearest(v){
+  let bi = 0, bd = Infinity;
+  F.forEach((f, i) => { const d = Math.abs(f.hair - v); if (d < bd){ bd = d; bi = i; } });
+  return bi;
+}
+
+/* ---------- 控件 ---------- */
+sl.min = M.lo; sl.max = M.hi;
+sl.addEventListener('input', () => { stop(); show(nearest(+sl.value)); });
+$('ghost').onclick = () => {
+  const on = $('ghost').getAttribute('aria-pressed') !== 'true';
+  $('ghost').setAttribute('aria-pressed', on);
+  box.classList.toggle('ghost', on);
+};
+document.querySelectorAll('#view button').forEach(b => b.onclick = () => {
+  document.querySelectorAll('#view button').forEach(x =>
+    x.setAttribute('aria-pressed', x === b));
+  box.classList.toggle('head', b.dataset.v === 'head');
+});
+function stop(){
+  if (!playing) return;
+  clearInterval(playing); playing = null;
+  $('play').textContent = '▶ 自动播放'; $('play').setAttribute('aria-pressed', 'false');
+}
+$('play').onclick = () => {
+  if (playing){ stop(); return; }
+  $('play').textContent = '❚❚ 暂停'; $('play').setAttribute('aria-pressed', 'true');
+  playing = setInterval(() => show(cur >= F.length - 1 ? 0 : cur + 1), 175);
+};
+addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT' && e.target !== sl) return;
+  if (e.key === 'ArrowRight'){ stop(); show(cur + 1); e.preventDefault(); }
+  else if (e.key === 'ArrowLeft'){ stop(); show(cur - 1); e.preventDefault(); }
+  else if (e.key === ' '){ $('play').click(); e.preventDefault(); }
+});
+
+/* ---------- 胶片 ---------- */
+const st = $('strip');
+F.forEach((f, i) => {
+  const im = document.createElement('img');
+  im.src = TH(f); im.loading = 'lazy'; im.decoding = 'async';
+  im.alt = `蓬松度 ${f.hair.toFixed(2)} · ${f.title}`;
+  im.title = `${f.hair.toFixed(2)} · ${f.date} · ${f.title}`;
+  im.onclick = () => { stop(); show(i); };
+  st.appendChild(im);
+});
+
+/* ---------- 走势小图 ---------- */
+const W = 336, Hh = 100, P = 13, PT = 24, PB = 12;
+const TS = F.map(f => new Date(f.date).getTime());
+const t0 = Math.min(...TS), t1 = Math.max(...TS);
+const CX = t => Math.max(P, Math.min(W - P, P + (t - t0) / (t1 - t0) * (W - P * 2)));
+const CY = v => Hh - PB - (v - M.lo) / (M.hi - M.lo) * (Hh - PB - PT);
+function drawChart(){
+  const sv = $('chart');
+  sv.setAttribute('viewBox', `0 0 ${W} ${Hh}`);
+  let s = '';
+  [2.5, 3.5, 4.5].forEach(v => {
+    s += `<line x1="${P}" y1="${CY(v).toFixed(1)}" x2="${W - P}" y2="${CY(v).toFixed(1)}"
+      stroke="var(--grid)"/>`;
+  });
+  // 折线得按**日期**串，F 本身是按蓬松度升序排的
+  const pts = F.map((f, k) => ({t: TS[k], k: k, x: CX(TS[k]), y: CY(f.hair)}))
+               .sort((a, b) => a.t - b.t || a.k - b.k)
+               .map(p => [p.x, p.y]);
+  s += `<polyline points="${pts.map(p => p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ')}"
+    fill="none" stroke="var(--blue)" stroke-width="1.6" stroke-opacity=".4"/>`;
+  pts.forEach(p => {
+    s += `<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="2.5"
+      fill="var(--blue)" fill-opacity=".55"/>`;
+  });
+  s += `<circle id="mk" cx="0" cy="0" r="6" fill="none" stroke="var(--orange)"
+    stroke-width="2.5"/>`;
+  s += `<text x="0" y="9" fill="var(--muted)" font-size="11">蓬松度随日期（一点一帧）</text>`;
+  sv.innerHTML = s;
+}
+function moveMarker(k){
+  const mk = $('mk');
+  if (!mk) return;
+  mk.setAttribute('cx', CX(new Date(F[k].date).getTime()).toFixed(1));
+  mk.setAttribute('cy', CY(F[k].hair).toFixed(1));
+}
+
+/* ---------- 尺寸 & 启动 ---------- */
+function size(){
+  const s = $('stage');
+  const w = Math.min(s.clientWidth - 28, (s.clientHeight - 28) * 660 / 560, 880);
+  box.style.width = Math.max(200, w) + 'px';
+  box.style.height = Math.max(170, w * 560 / 660) + 'px';
+}
+addEventListener('resize', size);
+const HS = new URLSearchParams(location.hash.slice(1));
+if (HS.get('ghost') === '1'){ box.classList.add('ghost');
+  $('ghost').setAttribute('aria-pressed', 'true'); }
+if (HS.get('view') === 'head'){ box.classList.add('head');
+  document.querySelectorAll('#view button').forEach(x =>
+    x.setAttribute('aria-pressed', x.dataset.v === 'head')); }
+size();
+g0.src = BIG(F[0]);
+drawChart();
+show(HS.get('i') ? +HS.get('i') : Math.floor(F.length / 2), true);
+setTimeout(() => F.forEach((f, i) => preload(i)), 350);   // 后台把所有帧拉下来
+</script>
+</body>
+</html>
