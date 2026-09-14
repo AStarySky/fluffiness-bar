@@ -3,6 +3,14 @@
 把 B 站 UP 主[分析学爱好者](https://space.bilibili.com/441167301)（mid 441167301）
 83 期视频里的画面按**头发蓬松度**排好序，拉动滑杆就能看头发一步步起飞。
 
+![头发蓬松度随时间变化](assets/hair_timelapse.gif)
+
+**下载 GIF**：[高清 495px（5.2 MB）](assets/hair_timelapse_hd.gif) · [标准 396px（3.2 MB）](assets/hair_timelapse.gif) · [小图 264px（1.6 MB）](assets/hair_timelapse_small.gif)
+
+
+**👉 在线玩**：https://astarysky.github.io/fluffiness-bar/　（左右方向键逐帧，空格自动播放）
+
+
 - 画面取自视频本体（720P），不是封面——封面上的黄色大字压在头上，把头发挡没了
 - 每一帧按**双眼连线**对齐：眼距恒定、双眼中点固定、眼线转正。换帧时脸不动，只有头发在变
 - 蓬松度为 4 人盲评均值；「拉近头顶」看细节，「叠加基准帧」把最不蓬松的那帧灰度叠上来对比

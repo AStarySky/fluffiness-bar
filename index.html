@@ -37,6 +37,8 @@ button{cursor:pointer}
 @media (prefers-color-scheme:dark){.seg button[aria-pressed=true]{background:#2f2f2d}}
 .pill{border:1px solid var(--line);background:var(--panel);color:var(--ink2);border-radius:7px;
  font:inherit;font-size:12.5px;padding:5px 11px}
+a.pill{text-decoration:none;display:inline-block}
+a.pill:hover{border-color:var(--blue);color:var(--blue)}
 .pill[aria-pressed=true]{border-color:var(--blue);color:var(--blue);font-weight:600}
 main{flex:1 1 auto;display:flex;min-height:0}
 #stage{flex:1 1 auto;display:flex;align-items:center;justify-content:center;min-width:0;
@@ -89,6 +91,8 @@ h3{font-size:13px;margin:0;color:var(--muted);font-weight:500}
 #strip img.on{opacity:1;box-shadow:0 0 0 2.5px var(--orange);transform:scale(1.07)}
 .row{display:flex;align-items:center;gap:9px}
 .note{color:var(--muted);font-size:12px}
+.note a{color:var(--blue);text-decoration:none;margin-right:12px;white-space:nowrap}
+.note a:hover{text-decoration:underline}
 .note a{color:var(--blue)}
 @media (max-width:900px){main{flex-direction:column}aside{flex:0 0 auto;border-left:0;
  border-top:1px solid var(--line);max-height:54%}}
@@ -104,6 +108,7 @@ h3{font-size:13px;margin:0;color:var(--muted);font-weight:500}
   </div>
   <button class="pill" id="ghost" aria-pressed="false">叠加基准帧</button>
   <button class="pill" id="play" aria-pressed="false">▶ 自动播放</button>
+  <a class="pill" id="dlgif" href="assets/hair_timelapse.gif" download>⤓ GIF</a>
 </header>
 <main>
   <div id="stage">
